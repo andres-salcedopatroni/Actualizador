@@ -4,64 +4,104 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors')
-var cron = require('node-cron');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
 
-//Conexion Atlas
-const mongoose = require('mongoose');
+//Manejo de tweets
+const cron = require('node-cron');
 const axios = require('axios');
+
 //Mongo
+const mongoose = require('mongoose');
 mongoose.connect('mongodb+srv://USER:1234@cluster0.4wtcxn6.mongodb.net/Tesis?retryWrites=true&w=majority');
 const schema_estudiantes=require('./schemas/schema_estudiantes');
 const schema_tweets=require('./schemas/schema_tweets');
 const estudiantes = mongoose.model('Estudiantes', schema_estudiantes,'Estudiantes');
 const tweets = mongoose.model('Tweets', schema_tweets,'Tweets');
+
+//Funcion de espera 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
-cron.schedule('0 0 * * *', async function(){
-  const date = new Date();
-  const lista_estudiante=await estudiantes.find({});
-  var grupos=[];
-  var usuarios=[];
-  var numero=0;
-  for (const e of lista_estudiante){
-    usuarios.push({"id":e.usuario,"fecha":date});
-    numero=numero+1;
-    if(numero==15 || lista_estudiante.indexOf(e)+1==lista_estudiante.length){
-      grupos.push(usuarios);
-      usuarios=[];
-      numero=0;
+
+//Acciones programadas
+cron.schedule('0 0 * * *', 
+  async function gestionarTweets() {
+    //Fecha de hoy
+    const hoy = new Date();
+    //Usuarios que no tienen tweets pero han sido registrados
+    const estudiantes_registrados=await estudiantes.find({}).select({usuario:1,_id:0});
+    var estudiantes_sin_tweets=[];
+    for (let e of estudiantes_registrados){
+      var existe_tweet_usuario= await tweets.findOne({usuario: e.usuario});
+      if(!existe_tweet_usuario)
+      estudiantes_sin_tweets.push(e.usuario);
     }
-  }
-  for (const g of grupos){
-    axios.post("https://andressalcedo2023.pythonanywhere.com//actualizar_tweets",g)
-    .then(datos => {
-      const tweets_usuarios=datos.data;
-      try{
-        for (const tweets_usuario of tweets_usuarios){
-          for (const tweet of tweets_usuario.usuario){
-            const t=new tweets({
-              estado: tweet.estado,
-              mensaje: tweet.texto, 
-              fecha: tweet.fecha,
-              usuario: tweets_usuario.usuario
-            });
-            t.save();
+    //Registrar tweets de usuario
+    for (let e of estudiantes_sin_tweets) {
+      axios.post("https://andressalcedo2023.pythonanywhere.com/tweets",{"usuario": e})
+      .then(
+        async function (datos) {
+          const tweets_usuario=datos.data;
+          try{
+            for (const tweet_usuario of tweets_usuario){
+              var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: e});
+              if(!existe_tweet_usuario){
+                const tweet=new tweets({
+                  estado: tweet_usuario.estado,
+                  mensaje: tweet_usuario.texto,
+                  fecha: tweet_usuario.fecha,
+                  usuario: e
+                });
+                await tweet.save();
+              }
+            }
           }
-        }
-      }catch(error){
-        console.log(error);
-      }
-    })
-    .catch(err => {
-      console.log(err);
-    });
-    await sleep(60000*20);
-  }
+          catch(error){          
+            console.log(error)
+          }
+        })
+      .catch( 
+        async function (error) {
+          await sleep(60000*15)
+          console.log(error)
+        });
+      await sleep(60000*3);
+    }
+    //Actualizar tweets de usuario
+    const estudiantes_por_actualizar=await estudiantes.find({});
+    for (let e of estudiantes_por_actualizar){
+      axios.post("https://andressalcedo2023.pythonanywhere.com/actualizar_tweets", {"usuario": e.usuario, "fecha":hoy})
+      .then(
+        async function (datos) {
+          const tweets_usuario=datos.data;
+          try{
+            for (const tweet_usuario of tweets_usuario){
+              var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: e});
+              if(!existe_tweet_usuario){
+                const tweet=new tweets({
+                  estado: tweet_usuario.estado,
+                  mensaje: tweet_usuario.texto, 
+                  fecha: tweet_usuario.fecha,
+                  usuario: e
+                });
+                await tweet.save();
+              }
+            }
+          }
+          catch(error){
+            console.log(error);
+          }
+        })
+      .catch(
+        async function (error) {
+          await sleep(60000*15)
+          console.log(error)
+        });
+      await sleep(60000*3);
+    }
   }
 );
 
