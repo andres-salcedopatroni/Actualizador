@@ -23,7 +23,7 @@ router.get('/', async function (req,res,next) {
         const tweets_usuario=datos.data;
         try{
           for (const tweet_usuario of tweets_usuario){
-            var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: e});
+            var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: estudiante_registrado.usuario});
             if(!existe_tweet_usuario){
               const tweet=new tweets({
                 estado: tweet_usuario.estado,
