@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+console.log("Hola mundo")
 const mongoose = require('mongoose');
 const schema_estudiantes=require('../schemas/schema_estudiantes');
 const schema_tweets=require('../schemas/schema_tweets');
