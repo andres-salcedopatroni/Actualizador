@@ -19,7 +19,7 @@ async function gestionarTweets() {
   const hoy = new Date();
   //Usuarios que no tienen tweets pero han sido registrados
   const estudiantes_registrados=await estudiantes.find({}).select({usuario:1,_id:0});
-  console.log(estudiantes_registrados);
+  
   var estudiantes_sin_tweets=[];
   for (let e of estudiantes_registrados){
     var existe_tweet_usuario= await tweets.findOne({usuario: e.usuario});
@@ -32,6 +32,7 @@ async function gestionarTweets() {
     .then(
       async function (datos) {
         const tweets_usuario=datos.data;
+        console.log(tweets_usuario);
         try{
           for (const tweet_usuario of tweets_usuario){
             var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: e});
