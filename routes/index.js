@@ -15,7 +15,7 @@ router.get('/', async function (req,res,next) {
   //Usuarios que no tienen tweets pero han sido registrados
   const estudiante_registrado=await estudiantes.findOne({"fecha":{ $ne:null}});
   console.log(estudiante_registrado)
-  const estudiante_actualizado = await User.findOneAndUpdate(estudiante_registrado,{$set: { fecha: hoy }});
+  const estudiante_actualizado = await estudiantes.findOneAndUpdate(estudiante_registrado,{$set: { fecha: hoy }});
   console.log(estudiante_actualizado)
   axios.post("https://andressalcedo2023.pythonanywhere.com/tweets",{"usuario": estudiante_registrado.usuario})
     .then(
