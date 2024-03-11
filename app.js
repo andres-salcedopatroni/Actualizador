@@ -37,6 +37,7 @@ cron.schedule('0 0 * * *',
     var estudiantes_sin_tweets=[];
     for (let e of estudiantes_registrados){
       var existe_tweet_usuario= await tweets.findOne({usuario: e.usuario});
+      console.log(existe_tweet_usuario);
       if(!existe_tweet_usuario)
       estudiantes_sin_tweets.push(e.usuario);
     }
