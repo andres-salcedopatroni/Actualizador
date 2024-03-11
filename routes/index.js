@@ -14,9 +14,9 @@ router.get('/', async function (req,res,next) {
   const hoy = new Date();
   //Usuarios que no tienen tweets pero han sido registrados
   const estudiante_registrado=await estudiantes.findOne({"fecha":{ $ne:null}});
-  estudiante_registrado.fecha=hoy;
   console.log(estudiante_registrado)
-  await estudiante_registrado.save()
+  const estudiante_actualizado = await User.findOneAndUpdate(estudiante_registrado,{$set: { fecha: hoy }});
+  console.log(estudiante_actualizado)
   axios.post("https://andressalcedo2023.pythonanywhere.com/tweets",{"usuario": estudiante_registrado.usuario})
     .then(
       async function (datos) {
@@ -34,6 +34,7 @@ router.get('/', async function (req,res,next) {
               await tweet.save();
             }
           }
+          res.render('index', { title: 'Express' });
         }
         catch(error){          
           console.log(error)
@@ -76,7 +77,7 @@ router.get('/', async function (req,res,next) {
     await sleep(60000*3);
   }*/
 
-  res.render('index', { title: 'Express' });
+  
 });
 
 module.exports = router;
