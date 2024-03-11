@@ -28,7 +28,7 @@ function sleep(ms) {
 }
 
 //Acciones programadas
-cron.schedule('0 0 * * *', 
+cron.schedule('16 4 * * *', 
   async function gestionarTweets() {
     //Fecha de hoy
     const hoy = new Date();
