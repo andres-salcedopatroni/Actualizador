@@ -34,10 +34,10 @@ cron.schedule('0 0 * * *',
     const hoy = new Date();
     //Usuarios que no tienen tweets pero han sido registrados
     const estudiantes_registrados=await estudiantes.find({}).select({usuario:1,_id:0});
+    console.log(estudiantes_registrados);
     var estudiantes_sin_tweets=[];
     for (let e of estudiantes_registrados){
       var existe_tweet_usuario= await tweets.findOne({usuario: e.usuario});
-      console.log(existe_tweet_usuario);
       if(!existe_tweet_usuario)
       estudiantes_sin_tweets.push(e.usuario);
     }
