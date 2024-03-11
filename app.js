@@ -7,6 +7,7 @@ var cors = require('cors')
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+console.log("Hola mundo")
 var app = express();
 
 //Manejo de tweets
