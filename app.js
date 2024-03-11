@@ -25,7 +25,7 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-//Acciones programadas
+/*Acciones programadas
 cron.schedule('22 4 * * *', 
   async function gestionarTweets() {
     //Fecha de hoy
@@ -104,7 +104,7 @@ cron.schedule('22 4 * * *',
     }
   }
 );
-
+*/
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

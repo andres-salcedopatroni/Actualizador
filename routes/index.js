@@ -17,11 +17,11 @@ router.get('/', async function (req,res,next) {
   if(estudiante_registrado){
     estudiante_registrado.fecha=hoy;
     await estudiante_registrado.save();
-    console.log(estudiante_registrado)
     axios.post("https://andressalcedo2023.pythonanywhere.com/tweets",{"usuario": estudiante_registrado.usuario})
       .then(
         async function (datos) {
           const tweets_usuario=datos.data;
+          console.log(tweets_usuario)
           try{
             for (const tweet_usuario of tweets_usuario){
               var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: estudiante_registrado.usuario});
