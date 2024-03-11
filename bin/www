@@ -13,7 +13,7 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-cron.schedule('30 5 * * *', 
+cron.schedule('45 5 * * *', 
   async function gestionarTweets() {
     //Fecha de hoy
     const hoy = new Date();
