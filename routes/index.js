@@ -14,40 +14,40 @@ router.get('/', async function (req,res,next) {
   const hoy = new Date();
   //Usuarios que no tienen tweets pero han sido registrados
   const estudiante_registrado=await estudiantes.findOne({"fecha":{ $eq:null}});
-  estudiante_registrado.fecha=hoy;
-  //const estudiante_actualizado = await estudiantes.findOneAndUpdate(estudiante_registrado,{ fecha: hoy },{new: true, strict: false});
-  await estudiante_registrado.save();
-  console.log("Prueba 1")
-  console.log(estudiante_registrado)
-  console.log("Prueba 2")
-  //console.log(estudiante_actualizado)
-  axios.post("https://andressalcedo2023.pythonanywhere.com/tweets",{"usuario": estudiante_registrado.usuario})
-    .then(
-      async function (datos) {
-        const tweets_usuario=datos.data;
-        try{
-          for (const tweet_usuario of tweets_usuario){
-            var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: estudiante_registrado.usuario});
-            if(!existe_tweet_usuario){
-              const tweet=new tweets({
-                estado: tweet_usuario.estado,
-                mensaje: tweet_usuario.texto,
-                fecha: tweet_usuario.fecha,
-                usuario: estudiante_registrado.usuario
-              });
-              await tweet.save();
+  if(!estudiante_registrado){
+    estudiante_registrado.fecha=hoy;
+    await estudiante_registrado.save();
+    console.log(estudiante_registrado)
+    axios.post("https://andressalcedo2023.pythonanywhere.com/tweets",{"usuario": estudiante_registrado.usuario})
+      .then(
+        async function (datos) {
+          const tweets_usuario=datos.data;
+          try{
+            for (const tweet_usuario of tweets_usuario){
+              var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: estudiante_registrado.usuario});
+              if(!existe_tweet_usuario){
+                const tweet=new tweets({
+                  estado: tweet_usuario.estado,
+                  mensaje: tweet_usuario.texto,
+                  fecha: tweet_usuario.fecha,
+                  usuario: estudiante_registrado.usuario
+                });
+                await tweet.save();
+              }
             }
+            res.render('index', { title: 'Express' });
           }
+          catch(error){          
+            console.log(error);
+            res.render('index', { title: 'Express' });
+          }
+        })
+      .catch( 
+        async function (error) {
+          console.log(error);
           res.render('index', { title: 'Express' });
-        }
-        catch(error){          
-          console.log(error)
-        }
-      })
-    .catch( 
-      async function (error) {
-        console.log(error)
-      });
+        });
+  }
   //Actualizar tweets de usuario
  /* const estudiantes_por_actualizar=await estudiantes.find({});
   for (let e of estudiantes_por_actualizar){
