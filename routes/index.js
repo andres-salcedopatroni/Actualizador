@@ -9,7 +9,7 @@ const tweets = mongoose.model('Tweets', schema_tweets,'Tweets');
 const axios = require('axios');
 
 /* GET home page. */
-router.get('/', async function (res,req,next) {
+router.get('/', async function (req,res,next) {
   //Fecha de hoy
   const hoy = new Date();
   //Usuarios que no tienen tweets pero han sido registrados
