@@ -13,7 +13,7 @@ router.get('/', async function (req,res,next) {
   //Fecha de hoy
   const hoy = new Date();
   //Usuarios que no tienen tweets pero han sido registrados
-  const estudiante_registrado=await estudiantes.findOne({"fecha":{ $ne:null}});
+  const estudiante_registrado=await estudiantes.findOne({"fecha":{ $eq:null}});
   const estudiante_actualizado = await estudiantes.findOneAndUpdate(estudiante_registrado,{ fecha: hoy });
   console.log("Prueba 1")
   console.log(estudiante_registrado)
