@@ -53,7 +53,9 @@ router.get('/', async function (req,res,next) {
     const estudiantes_por_actualizar=await estudiantes.find({}).sort({fecha:"asc"});
     console.log(hoy)
     console.log(estudiantes_por_actualizar)
-    for (const e of estudiantes_por_actualizar){
+    if(estudiantes_por_actualizar.length>0) {
+      const e = estudiantes_por_actualizar[0]
+      console.log(e);
       if(hoy.getDate()!= e.fecha.getDate() && e.fecha < hoy){
         //e.fecha=hoy;
         //await e.save();
@@ -93,6 +95,10 @@ router.get('/', async function (req,res,next) {
         res.render('index', { title: 'Express' });
       } 
     }
+    else{
+      res.render('index', { title: 'Express' });
+    }
+      
   }
 });
 
