@@ -14,6 +14,7 @@ router.get('/', async function (req,res,next) {
   const hoy = new Date();
   //Usuarios que no tienen tweets pero han sido registrados
   const estudiante_registrado=await estudiantes.findOne({"fecha":{ $eq:null}});
+  //Obtener tweets
   if(estudiante_registrado){
     estudiante_registrado.fecha=hoy;
     await estudiante_registrado.save();
@@ -21,7 +22,6 @@ router.get('/', async function (req,res,next) {
       .then(
         async function (datos) {
           const tweets_usuario=datos.data;
-          console.log(tweets_usuario)
           try{
             for (const tweet_usuario of tweets_usuario){
               var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: estudiante_registrado.usuario});
@@ -48,38 +48,44 @@ router.get('/', async function (req,res,next) {
           res.render('index', { title: 'Express' });
         });
   }
-  //Actualizar tweets de usuario
- /* const estudiantes_por_actualizar=await estudiantes.find({});
-  for (let e of estudiantes_por_actualizar){
-    axios.post("https://andressalcedo2023.pythonanywhere.com/actualizar_tweets", {"usuario": e.usuario, "fecha":hoy})
-    .then(
-      async function (datos) {
-        const tweets_usuario=datos.data;
-        try{
-          for (const tweet_usuario of tweets_usuario){
-            var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: e});
-            if(!existe_tweet_usuario){
-              const tweet=new tweets({
-                estado: tweet_usuario.estado,
-                mensaje: tweet_usuario.texto, 
-                fecha: tweet_usuario.fecha,
-                usuario: e
-              });
-              await tweet.save();
+  else{
+    //Actualizar tweets de usuario
+    const estudiantes_por_actualizar=await estudiantes.find({}).sort({fecha:"asc"});
+    console.log(estudiantes_por_actualizar)
+    /*for (let e of estudiantes_por_actualizar){
+      axios.post("https://andressalcedo2023.pythonanywhere.com/actualizar_tweets", {"usuario": e.usuario, "fecha":hoy})
+      .then(
+        async function (datos) {
+          const tweets_usuario=datos.data;
+          try{
+            for (const tweet_usuario of tweets_usuario){
+              var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: e});
+              if(!existe_tweet_usuario){
+                const tweet=new tweets({
+                  estado: tweet_usuario.estado,
+                  mensaje: tweet_usuario.texto, 
+                  fecha: tweet_usuario.fecha,
+                  usuario: e
+                });
+                await tweet.save();
+              }
             }
           }
-        }
-        catch(error){
-          console.log(error);
-        }
-      })
-    .catch(
-      async function (error) {
-        await sleep(60000*15)
-        console.log(error)
-      });
-    await sleep(60000*3);
-  }*/
+          catch(error){
+            console.log(error);
+          }
+        })
+      .catch(
+        async function (error) {
+          await sleep(60000*15)
+          console.log(error)
+        });
+      await sleep(60000*3);
+    }*/
+    res.render('index', { title: 'Express' });
+  }
+  
+ 
 
   
 });
