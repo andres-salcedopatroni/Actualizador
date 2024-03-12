@@ -53,13 +53,9 @@ router.get('/', async function (req,res,next) {
     const estudiantes_por_actualizar=await estudiantes.find({}).sort({fecha:"asc"});
     console.log(hoy)
     for (const e of estudiantes_por_actualizar){
-      console.log(hoy.getDate())
-      console.log(e.fecha.getDate())
-      console.log(hoy.getDate()!= e.fecha.getDate())
-      console.log(e.fecha < hoy)
       if(hoy.getDate()!= e.fecha.getDate() && e.fecha < hoy){
-        e.fecha=hoy;
-        await e.save();
+        //e.fecha=hoy;
+        //await e.save();
         axios.post("https://andressalcedo2023.pythonanywhere.com/actualizar_tweets", {"usuario": e.usuario, "fecha":hoy})
         .then(
           async function (datos) {
@@ -79,24 +75,25 @@ router.get('/', async function (req,res,next) {
                   await tweet.save();
                 }
               }
+              res.render('index', { title: 'Express' });
             }
             catch(error){
               console.log(error);
+              res.render('index', { title: 'Express' });
             }
           })
         .catch(
           async function (error) {
             console.log(error)
+            res.render('index', { title: 'Express' });
           });
       }
-      break;
+      else {
+        res.render('index', { title: 'Express' });
+        break;
+      } 
     }
-    res.render('index', { title: 'Express' });
   }
-  
- 
-
-  
 });
 
 module.exports = router;
