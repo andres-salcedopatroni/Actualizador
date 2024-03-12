@@ -63,6 +63,7 @@ router.get('/', async function (req,res,next) {
         axios.post("https://andressalcedo2023.pythonanywhere.com/actualizar_tweets", {"usuario": e.usuario, "fecha":hoy})
         .then(
           async function (datos) {
+            console.log("Hola mundo")
             const tweets_usuario=datos.data;
             console.log(tweets_usuario)
             try{
