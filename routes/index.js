@@ -52,9 +52,12 @@ router.get('/', async function (req,res,next) {
     //Actualizar tweets de usuario
     const estudiantes_por_actualizar=await estudiantes.find({}).sort({fecha:"asc"});
     console.log(hoy)
-    console.log(estudiantes_por_actualizar)
     for (const e of estudiantes_por_actualizar){
-      if(hoy.getDate()== e.fecha.getDate() && hoy.getFullYear()== e.fecha.getFullYear() && hoy.getMonth()== e.fecha.getMonth() && e.fecha < hoy){
+      console.log(hoy.getDate())
+      console.log(e.fecha.getDate())
+      console.log(hoy.getDate()!= e.fecha.getDate())
+      console.log(e.fecha < hoy)
+      if(hoy.getDate()!= e.fecha.getDate() && e.fecha < hoy){
         e.fecha=hoy;
         await e.save();
         axios.post("https://andressalcedo2023.pythonanywhere.com/actualizar_tweets", {"usuario": e.usuario, "fecha":hoy})
