@@ -51,37 +51,42 @@ router.get('/', async function (req,res,next) {
   else{
     //Actualizar tweets de usuario
     const estudiantes_por_actualizar=await estudiantes.find({}).sort({fecha:"asc"});
+    console.log(hoy)
     console.log(estudiantes_por_actualizar)
-    /*for (let e of estudiantes_por_actualizar){
-      axios.post("https://andressalcedo2023.pythonanywhere.com/actualizar_tweets", {"usuario": e.usuario, "fecha":hoy})
-      .then(
-        async function (datos) {
-          const tweets_usuario=datos.data;
-          try{
-            for (const tweet_usuario of tweets_usuario){
-              var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: e});
-              if(!existe_tweet_usuario){
-                const tweet=new tweets({
-                  estado: tweet_usuario.estado,
-                  mensaje: tweet_usuario.texto, 
-                  fecha: tweet_usuario.fecha,
-                  usuario: e
-                });
-                await tweet.save();
+    for (const e of estudiantes_por_actualizar){
+      if(hoy.getDate()== e.fecha.getDate() && hoy.getFullYear()== e.fecha.getFullYear() && hoy.getMonth()== e.fecha.getMonth() && e.fecha < hoy){
+        e.fecha=hoy;
+        await e.save();
+        axios.post("https://andressalcedo2023.pythonanywhere.com/actualizar_tweets", {"usuario": e.usuario, "fecha":hoy})
+        .then(
+          async function (datos) {
+            const tweets_usuario=datos.data;
+            console.log(tweets_usuario)
+            try{
+              for (const tweet_usuario of tweets_usuario){
+                var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: e});
+                if(!existe_tweet_usuario){
+                  const tweet=new tweets({
+                    estado: tweet_usuario.estado,
+                    mensaje: tweet_usuario.texto, 
+                    fecha: tweet_usuario.fecha,
+                    usuario: e
+                  });
+                  await tweet.save();
+                }
               }
             }
-          }
-          catch(error){
-            console.log(error);
-          }
-        })
-      .catch(
-        async function (error) {
-          await sleep(60000*15)
-          console.log(error)
-        });
-      await sleep(60000*3);
-    }*/
+            catch(error){
+              console.log(error);
+            }
+          })
+        .catch(
+          async function (error) {
+            console.log(error)
+          });
+      }
+      break;
+    }
     res.render('index', { title: 'Express' });
   }
   
