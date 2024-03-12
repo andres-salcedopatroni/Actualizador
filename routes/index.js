@@ -52,6 +52,7 @@ router.get('/', async function (req,res,next) {
     //Actualizar tweets de usuario
     const estudiantes_por_actualizar=await estudiantes.find({}).sort({fecha:"asc"});
     console.log(hoy)
+    console.log(estudiantes_por_actualizar)
     for (const e of estudiantes_por_actualizar){
       if(hoy.getDate()!= e.fecha.getDate() && e.fecha < hoy){
         //e.fecha=hoy;
@@ -90,7 +91,6 @@ router.get('/', async function (req,res,next) {
       }
       else {
         res.render('index', { title: 'Express' });
-        break;
       } 
     }
   }
