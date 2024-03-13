@@ -55,7 +55,7 @@ router.get('/', async function (req,res,next) {
     const estudiantes_por_actualizar=await estudiantes.find({}).sort({fecha:"asc"});
     if(estudiantes_por_actualizar.length>0) {
       const e = estudiantes_por_actualizar[0]
-      var d = hoy;
+      var d = new Date(hoy.getTime());
       d.setMonth(d.getMonth() - 3);
       console.log("Prueba");
 console.log(d);
