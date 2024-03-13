@@ -94,7 +94,7 @@ router.get('/', async function (req,res,next) {
           });
       }
       else {
-        console.log("Tweets actualizados")
+        console.log("Tweets actualizados a la fecha")
         res.render('index', { title: 'Express' });
       } 
     }
