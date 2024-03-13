@@ -22,7 +22,6 @@ router.get('/', async function (req,res,next) {
       .then(
         async function (datos) {
           const tweets_usuario=datos.data;
-          console.log(tweets_usuario);
           try{
             for (const tweet_usuario of tweets_usuario){
               var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: estudiante_registrado.usuario});
@@ -53,17 +52,16 @@ router.get('/', async function (req,res,next) {
     //Actualizar tweets de usuario
     const estudiantes_por_actualizar=await estudiantes.find({}).sort({fecha:"asc"});
     console.log(hoy)
-    console.log(estudiantes_por_actualizar)
     if(estudiantes_por_actualizar.length>0) {
       const e = estudiantes_por_actualizar[0]
       console.log(e);
       if(hoy.getDate()!= e.fecha.getDate() && e.fecha < hoy){
-        //e.fecha=hoy;
-        //await e.save();
-        axios.post("https://andressalcedo2023.pythonanywhere.com/actualizar_tweets", {"usuario": e.usuario, "fecha":hoy})
+        e.fecha=hoy;
+        await e.save();
+        console.log(hoy.getFullYear()+"-"+hoy.getMonth()+"-"+hoy.getDate());
+        axios.post("https://andressalcedo2023.pythonanywhere.com/actualizar_tweets", {"usuario": e.usuario, "fecha":hoy.getFullYear()+"-"+hoy.getMonth()+"-"+hoy.getDate()})
         .then(
           async function (datos) {
-            console.log("Hola mundo")
             const tweets_usuario=datos.data;
             console.log(tweets_usuario)
             try{
@@ -98,8 +96,7 @@ router.get('/', async function (req,res,next) {
     }
     else{
       res.render('index', { title: 'Express' });
-    }
-      
+    }   
   }
 });
 
