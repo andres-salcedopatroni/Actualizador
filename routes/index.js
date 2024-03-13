@@ -55,9 +55,11 @@ router.get('/', async function (req,res,next) {
     const estudiantes_por_actualizar=await estudiantes.find({}).sort({fecha:"asc"});
     if(estudiantes_por_actualizar.length>0) {
       const e = estudiantes_por_actualizar[0]
-      var d = new Date();
-      d.setMonth(d.getMonth() - 5);
+      var d = hoy;
+      d.setMonth(d.getMonth() - 3);
+      console.log("Prueba");
 console.log(d);
+console.log(hoy);
       if(hoy.getDate()!= e.fecha.getDate() && e.fecha < hoy){
         const fecha_pasada=e.fecha;
         e.fecha=hoy;
