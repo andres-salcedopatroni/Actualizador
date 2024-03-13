@@ -55,11 +55,11 @@ router.get('/', async function (req,res,next) {
     const estudiantes_por_actualizar=await estudiantes.find({}).sort({fecha:"asc"});
     if(estudiantes_por_actualizar.length>0) {
       const e = estudiantes_por_actualizar[0]
-      console.log(e);
+      var d = new Date();
+      d.setMonth(d.getMonth() - 5);
+console.log(d);
       if(hoy.getDate()!= e.fecha.getDate() && e.fecha < hoy){
         const fecha_pasada=e.fecha;
-        console.log(hoy);
-        console.log(fecha_pasada)
         e.fecha=hoy;
         await e.save();
         axios.post("https://andressalcedo2023.pythonanywhere.com/actualizar_tweets", {"usuario": e.usuario, "fecha_actual":hoy, "fecha_pasada":fecha_pasada})
@@ -80,7 +80,7 @@ router.get('/', async function (req,res,next) {
                   await tweet.save();
                 }
               }
-              console.log("Tweets Registrados")
+              console.log("Tweets Actualizados")
               console.log(e.usuario)
               res.render('index', { title: 'Express' });
             }
