@@ -62,25 +62,26 @@ router.get('/', async function (req,res,next) {
         console.log(fecha_pasada)
         e.fecha=hoy;
         await e.save();
-        console.log(hoy.getFullYear()+"-"+hoy.getMonth()+"-"+hoy.getDate());
-        axios.post("https://andressalcedo2023.pythonanywhere.com/actualizar_tweets", {"usuario": e.usuario, "fecha":hoy.getFullYear()+"-"+hoy.getMonth()+"-"+hoy.getDate()})
+        axios.post("https://andressalcedo2023.pythonanywhere.com/actualizar_tweets", {"usuario": e.usuario, "fecha_actual":hoy, "fecha_pasada":fecha_pasada})
         .then(
           async function (datos) {
             const tweets_usuario=datos.data;
             console.log(tweets_usuario)
             try{
               for (const tweet_usuario of tweets_usuario){
-                var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: e});
+                var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: e.usuario});
                 if(!existe_tweet_usuario){
                   const tweet=new tweets({
                     estado: tweet_usuario.estado,
                     mensaje: tweet_usuario.texto, 
                     fecha: tweet_usuario.fecha,
-                    usuario: e
+                    usuario: e.usuario
                   });
                   await tweet.save();
                 }
               }
+              console.log("Tweets Registrados")
+              console.log(e.usuario)
               res.render('index', { title: 'Express' });
             }
             catch(error){
