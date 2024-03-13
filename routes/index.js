@@ -17,8 +17,10 @@ router.get('/', async function (req,res,next) {
   //Obtener tweets
   if(estudiante_registrado){
     estudiante_registrado.fecha=hoy;
+    const fecha_pasada = new Date(hoy.getTime());
+    fecha_pasada.setMonth(fecha_pasada.getMonth() - 3);
     await estudiante_registrado.save();
-    axios.post("https://andressalcedo2023.pythonanywhere.com/tweets",{"usuario": estudiante_registrado.usuario})
+    axios.post("https://andressalcedo2023.pythonanywhere.com/tweets",{"usuario": estudiante_registrado.usuario, "fecha_actual":hoy, "fecha_pasada":fecha_pasada})
       .then(
         async function (datos) {
           const tweets_usuario=datos.data;
@@ -55,20 +57,14 @@ router.get('/', async function (req,res,next) {
     const estudiantes_por_actualizar=await estudiantes.find({}).sort({fecha:"asc"});
     if(estudiantes_por_actualizar.length>0) {
       const e = estudiantes_por_actualizar[0]
-      var d = new Date(hoy.getTime());
-      d.setMonth(d.getMonth() - 3);
-      console.log("Prueba");
-console.log(d);
-console.log(hoy);
       if(hoy.getDate()!= e.fecha.getDate() && e.fecha < hoy){
         const fecha_pasada=e.fecha;
         e.fecha=hoy;
         await e.save();
-        axios.post("https://andressalcedo2023.pythonanywhere.com/actualizar_tweets", {"usuario": e.usuario, "fecha_actual":hoy, "fecha_pasada":fecha_pasada})
+        axios.post("https://andressalcedo2023.pythonanywhere.com/tweets", {"usuario": e.usuario, "fecha_actual":hoy, "fecha_pasada":fecha_pasada})
         .then(
           async function (datos) {
             const tweets_usuario=datos.data;
-            console.log(tweets_usuario)
             try{
               for (const tweet_usuario of tweets_usuario){
                 var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: e.usuario});
