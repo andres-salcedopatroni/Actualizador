@@ -35,6 +35,8 @@ router.get('/', async function (req,res,next) {
                 await tweet.save();
               }
             }
+            console.log("Tweets Registrados")
+            console.log(estudiante_registrado.usuario)
             res.render('index', { title: 'Express' });
           }
           catch(error){          
@@ -51,11 +53,13 @@ router.get('/', async function (req,res,next) {
   else{
     //Actualizar tweets de usuario
     const estudiantes_por_actualizar=await estudiantes.find({}).sort({fecha:"asc"});
-    console.log(hoy)
     if(estudiantes_por_actualizar.length>0) {
       const e = estudiantes_por_actualizar[0]
       console.log(e);
       if(hoy.getDate()!= e.fecha.getDate() && e.fecha < hoy){
+        const fecha_pasada=e.fecha;
+        console.log(hoy);
+        console.log(fecha_pasada)
         e.fecha=hoy;
         await e.save();
         console.log(hoy.getFullYear()+"-"+hoy.getMonth()+"-"+hoy.getDate());
@@ -91,10 +95,12 @@ router.get('/', async function (req,res,next) {
           });
       }
       else {
+        console.log("Tweets actualizados")
         res.render('index', { title: 'Express' });
       } 
     }
     else{
+      console.log("No hay estudiantes")
       res.render('index', { title: 'Express' });
     }   
   }
