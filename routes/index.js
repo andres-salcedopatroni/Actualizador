@@ -60,6 +60,8 @@ router.get('/', async function (req,res,next) {
       if(hoy.getDate()!= e.fecha.getDate() && e.fecha < hoy){
         const fecha_pasada=e.fecha;
         e.fecha=hoy;
+        console.log(hoy)
+        console.log(fecha_pasada)
         await e.save();
         axios.post("https://andressalcedo2023.pythonanywhere.com/tweets", {"usuario": e.usuario, "fecha_actual":hoy, "fecha_pasada":fecha_pasada})
         .then(
