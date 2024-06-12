@@ -26,7 +26,7 @@ function sleep(ms) {
 }
 
 
-cron.schedule('0 55 * * * *', async function gestionarTweets() {
+cron.schedule('0 4 * * * *', async function gestionarTweets() {
   try{
     //Fecha de hoy
     const hoy = new Date();
@@ -74,7 +74,7 @@ cron.schedule('0 55 * * * *', async function gestionarTweets() {
           const fecha_pasada=e.fecha;
           e.fecha=hoy;
           await e.save();
-          const todos_tweets= await tweets.find({});
+          const todos_tweets= await tweets.find({"usuario": e.usuario});
           axios.post("https://andressalcedo2023.pythonanywhere.com/clasificar", {"usuario": e.usuario, "fecha_actual":hoy, "fecha_pasada":fecha_pasada,"tweets":todos_tweets})
           .then(
             async function (datos) {
