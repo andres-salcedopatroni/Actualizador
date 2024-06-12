@@ -29,7 +29,7 @@ function sleep(ms) {
 }
 
 
-cron.schedule('*/2 * * * * *', 
+cron.schedule('0 */15 * * * *', 
   async function gestionarTweets() {
     
     //Fecha de hoy
