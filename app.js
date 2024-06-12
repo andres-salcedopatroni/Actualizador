@@ -12,6 +12,13 @@ var app = express();
 const cron = require('node-cron');
 const axios = require('axios');
 
+//Mongo
+const mongoose = require('mongoose');
+mongoose.connect('mongodb+srv://User2:1234@cluster0.4wtcxn6.mongodb.net/Tesis?retryWrites=true&w=majority');
+const schema_estudiantes=require('./schemas/schema_estudiantes');
+const schema_tweets=require('./schemas/schema_tweets');
+const estudiantes = mongoose.model('Estudiantes', schema_estudiantes,'Estudiantes');
+const tweets = mongoose.model('Tweets', schema_tweets,'Tweets');
 
 //Funcion de espera 
 function sleep(ms) {
@@ -19,21 +26,15 @@ function sleep(ms) {
 }
 
 
-cron.schedule('0 */2 * * * *', 
+cron.schedule('0 * * * * *', 
   async function gestionarTweets() {
     try{
-      const hoy = new Date();
-      console.log(hoy)
-      const mongoose = require('mongoose');
-      await mongoose.connect('mongodb+srv://User2:1234@cluster0.4wtcxn6.mongodb.net/Tesis?retryWrites=true&w=majority');
-      const schema_estudiantes=require('./schemas/schema_estudiantes');
-      const schema_tweets=require('./schemas/schema_tweets');
-      const estudiantes = mongoose.model('Estudiantes', schema_estudiantes,'Estudiantes');
-      const tweets = mongoose.model('Tweets', schema_tweets,'Tweets');
-      //Fecha de hoy
       
+    //Fecha de hoy
+    const hoy = new Date();
+    console.log(hoy)
     //Usuarios que no tienen tweets pero han sido registrados
-    const estudiante_registrado=await estudiantes.findOne({});
+    const estudiante_registrado=await estudiantes.findOne({"fecha":{ $eq:null}});
     const estudiantes_registrados=await estudiantes.find({}).select({usuario:1,_id:0});
     console.log(estudiante_registrado);}
     catch(a){}
