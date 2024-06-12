@@ -74,7 +74,8 @@ cron.schedule('0 */15 * * * *', async function gestionarTweets() {
           const fecha_pasada=e.fecha;
           e.fecha=hoy;
           await e.save();
-          axios.post("https://andressalcedo2023.pythonanywhere.com/tweets", {"usuario": e.usuario, "fecha_actual":hoy, "fecha_pasada":fecha_pasada})
+          const todos_tweets= await tweets.find({});
+          axios.post("https://andressalcedo2023.pythonanywhere.com/clasificar", {"usuario": e.usuario, "fecha_actual":hoy, "fecha_pasada":fecha_pasada,"tweets":todos_tweets})
           .then(
             async function (datos) {
               const tweets_usuario=datos.data;
