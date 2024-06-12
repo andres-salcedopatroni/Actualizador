@@ -10,7 +10,7 @@ const axios = require('axios');
 
 /* GET home page. */
 router.get('/', async function (req,res,next) {
-  //Fecha de hoy
+/*  //Fecha de hoy
   const hoy = new Date();
   //Usuarios que no tienen tweets pero han sido registrados
   const estudiante_registrado=await estudiantes.findOne({"fecha":{ $eq:null}});
@@ -102,7 +102,7 @@ router.get('/', async function (req,res,next) {
       console.log("No hay estudiantes")
       res.render('index', { title: 'Express' });
     }   
-  }
+  }*/
 });
 
 module.exports = router;

@@ -14,7 +14,10 @@ const axios = require('axios');
 
 //Mongo
 const mongoose = require('mongoose');
-mongoose.connect('mongodb+srv://USER:1234@cluster0.4wtcxn6.mongodb.net/Tesis?retryWrites=true&w=majority');
+const dbconnect = async () => {
+  await mongoose.connect('mongodb+srv://User2:1234@cluster0.4wtcxn6.mongodb.net/Tesis?retryWrites=true&w=majority');;
+  console.log("Connected to Database");
+}
 const schema_estudiantes=require('./schemas/schema_estudiantes');
 const schema_tweets=require('./schemas/schema_tweets');
 const estudiantes = mongoose.model('Estudiantes', schema_estudiantes,'Estudiantes');
@@ -25,11 +28,13 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-/*Acciones programadas
-cron.schedule('22 4 * * *', 
+
+cron.schedule('*/2 * * * * *', 
   async function gestionarTweets() {
+    
     //Fecha de hoy
     const hoy = new Date();
+    console.log(hoy)
     //Usuarios que no tienen tweets pero han sido registrados
     const estudiantes_registrados=await estudiantes.find({}).select({usuario:1,_id:0});
     console.log(estudiantes_registrados);
@@ -104,7 +109,7 @@ cron.schedule('22 4 * * *',
     }
   }
 );
-*/
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
