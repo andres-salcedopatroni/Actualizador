@@ -12,16 +12,6 @@ var app = express();
 const cron = require('node-cron');
 const axios = require('axios');
 
-//Mongo
-const mongoose = require('mongoose');
-const dbconnect = async () => {
-  await mongoose.connect('mongodb+srv://User2:1234@cluster0.4wtcxn6.mongodb.net/Tesis?retryWrites=true&w=majority');;
-  console.log("Connected to Database");
-}
-const schema_estudiantes=require('./schemas/schema_estudiantes');
-const schema_tweets=require('./schemas/schema_tweets');
-const estudiantes = mongoose.model('Estudiantes', schema_estudiantes,'Estudiantes');
-const tweets = mongoose.model('Tweets', schema_tweets,'Tweets');
 
 //Funcion de espera 
 function sleep(ms) {
@@ -29,15 +19,25 @@ function sleep(ms) {
 }
 
 
-cron.schedule('0 */15 * * * *', 
+cron.schedule('0 */2 * * * *', 
   async function gestionarTweets() {
-    
-    //Fecha de hoy
-    const hoy = new Date();
-    console.log(hoy)
+    try{
+      const hoy = new Date();
+      console.log(hoy)
+      const mongoose = require('mongoose');
+      await mongoose.connect('mongodb+srv://User2:1234@cluster0.4wtcxn6.mongodb.net/Tesis?retryWrites=true&w=majority');
+      const schema_estudiantes=require('./schemas/schema_estudiantes');
+      const schema_tweets=require('./schemas/schema_tweets');
+      const estudiantes = mongoose.model('Estudiantes', schema_estudiantes,'Estudiantes');
+      const tweets = mongoose.model('Tweets', schema_tweets,'Tweets');
+      //Fecha de hoy
+      
     //Usuarios que no tienen tweets pero han sido registrados
+    const estudiante_registrado=await estudiantes.findOne({});
     const estudiantes_registrados=await estudiantes.find({}).select({usuario:1,_id:0});
-    console.log(estudiantes_registrados);
+    console.log(estudiante_registrado);}
+    catch(a){}
+    /*console.log("hola");
     var estudiantes_sin_tweets=[];
     for (let e of estudiantes_registrados){
       var existe_tweet_usuario= await tweets.findOne({usuario: e.usuario});
@@ -106,7 +106,7 @@ cron.schedule('0 */15 * * * *',
           console.log(error)
         });
       await sleep(60000*3);
-    }
+    }*/
   }
 );
 
