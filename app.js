@@ -26,7 +26,7 @@ function sleep(ms) {
 }
 
 
-cron.schedule('0 23 * * * *', async function gestionarTweets() {
+cron.schedule('0 */15 * * * *', async function gestionarTweets() {
   try{
     //Fecha de hoy
     const hoy = new Date();
@@ -41,7 +41,9 @@ cron.schedule('0 23 * * * *', async function gestionarTweets() {
       axios.post("https://andressalcedo2023.pythonanywhere.com/tweets",{"usuario": estudiante_registrado.usuario, "fecha_actual":hoy, "fecha_pasada":fecha_pasada})
       .then(
         async function (datos) {
-          const tweets_usuario=datos.data;
+          const tweets_usuario=datos.data.tweets;
+          e.estado=datos.data.estado;
+          await e.save();
           try{
             for (const tweet_usuario of tweets_usuario){
               var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: estudiante_registrado.usuario});
@@ -78,7 +80,9 @@ cron.schedule('0 23 * * * *', async function gestionarTweets() {
           axios.post("https://andressalcedo2023.pythonanywhere.com/clasificar", {"usuario": e.usuario, "fecha_actual":hoy, "fecha_pasada":fecha_pasada,"tweets":todos_tweets})
           .then(
             async function (datos) {
-              const tweets_usuario=datos.data;
+              const tweets_usuario=datos.data.tweets;
+              e.estado=datos.data.estado;
+              await e.save();
               try{
                 for (const tweet_usuario of tweets_usuario){
                   var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: e.usuario});
