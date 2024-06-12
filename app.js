@@ -26,7 +26,7 @@ function sleep(ms) {
 }
 
 
-cron.schedule('0 * * * * *', 
+cron.schedule('0 */2 * * * *', 
   async function gestionarTweets() {
     try{
       
@@ -35,7 +35,6 @@ cron.schedule('0 * * * * *',
     console.log(hoy)
     //Usuarios que no tienen tweets pero han sido registrados
     const estudiante_registrado=await estudiantes.findOne({"fecha":{ $eq:null}});
-    const estudiantes_registrados=await estudiantes.find({}).select({usuario:1,_id:0});
     console.log(estudiante_registrado);}
     catch(a){}
     /*console.log("hola");
