@@ -26,18 +26,95 @@ function sleep(ms) {
 }
 
 
-cron.schedule('0 */15 * * * *', 
-  async function gestionarTweets() {
-    try{
-      
+cron.schedule('0 */15 * * * *', async function gestionarTweets() {
+  try{
     //Fecha de hoy
     const hoy = new Date();
-    console.log(hoy)
     //Usuarios que no tienen tweets pero han sido registrados
     const estudiante_registrado=await estudiantes.findOne({"fecha":{ $eq:null}});
+    //Obtener tweets
+    if(estudiante_registrado){
+      estudiante_registrado.fecha=hoy;
+      const fecha_pasada = new Date(hoy.getTime());
+      fecha_pasada.setMonth(fecha_pasada.getMonth() - 1);
+      await estudiante_registrado.save();
+      axios.post("https://andressalcedo2023.pythonanywhere.com/tweets",{"usuario": estudiante_registrado.usuario, "fecha_actual":hoy, "fecha_pasada":fecha_pasada})
+      .then(
+        async function (datos) {
+          const tweets_usuario=datos.data;
+          try{
+            for (const tweet_usuario of tweets_usuario){
+              var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: estudiante_registrado.usuario});
+              if(!existe_tweet_usuario){
+                const tweet=new tweets({
+                  estado: tweet_usuario.estado,
+                  mensaje: tweet_usuario.texto,
+                  fecha: tweet_usuario.fecha,
+                  usuario: estudiante_registrado.usuario
+                });
+                await tweet.save();
+              }
+            }
+            console.log("Tweets Registrados")
+          }
+          catch(error){          
+            console.log(error);
+          }
+        })
+      .catch( async function (error) {
+          console.log(error);
+      });
+    }
+    else{
+      //Actualizar tweets de usuario
+      const estudiantes_por_actualizar=await estudiantes.find({}).sort({fecha:"asc"});
+      if(estudiantes_por_actualizar.length>0) {
+        const e = estudiantes_por_actualizar[0]
+        if(hoy.getDate()!= e.fecha.getDate() && e.fecha < hoy){
+          const fecha_pasada=e.fecha;
+          e.fecha=hoy;
+          await e.save();
+          axios.post("https://andressalcedo2023.pythonanywhere.com/tweets", {"usuario": e.usuario, "fecha_actual":hoy, "fecha_pasada":fecha_pasada})
+          .then(
+            async function (datos) {
+              const tweets_usuario=datos.data;
+              try{
+                for (const tweet_usuario of tweets_usuario){
+                  var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: e.usuario});
+                  if(!existe_tweet_usuario){
+                    const tweet=new tweets({
+                      estado: tweet_usuario.estado,
+                      mensaje: tweet_usuario.texto, 
+                      fecha: tweet_usuario.fecha,
+                      usuario: e.usuario
+                    });
+                    await tweet.save();
+                  }
+                }
+                console.log("Tweets Actualizados")
+              }
+              catch(error){
+                console.log(error);
+              }
+            })
+          .catch(
+            async function (error) {
+              console.log(error)
+            });
+        }
+        else {
+          console.log("Tweets actualizados a la fecha")
+        } 
+      }
+      else{
+        console.log("No hay estudiantes")
+      }   
+    }
   }
-    catch(a){}
-    /*console.log("hola");
+  catch(error){
+    console.log(error)
+  }
+    /*
     var estudiantes_sin_tweets=[];
     for (let e of estudiantes_registrados){
       var existe_tweet_usuario= await tweets.findOne({usuario: e.usuario});

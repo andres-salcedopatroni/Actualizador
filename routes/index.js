@@ -10,10 +10,7 @@ const axios = require('axios');
 
 /* GET home page. */
 router.get('/', async function (req,res,next) {
-/*  //Fecha de hoy
-  const hoy = new Date();
-  //Usuarios que no tienen tweets pero han sido registrados
-  const estudiante_registrado=await estudiantes.findOne({"fecha":{ $eq:null}});
+/*  
   //Obtener tweets
   if(estudiante_registrado){
     estudiante_registrado.fecha=hoy;
