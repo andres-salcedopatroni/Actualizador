@@ -37,13 +37,12 @@ cron.schedule('0 */15 * * * *', async function gestionarTweets() {
       estudiante_registrado.fecha=hoy;
       const fecha_pasada = new Date(hoy.getTime());
       fecha_pasada.setMonth(fecha_pasada.getMonth() - 1);
-      await estudiante_registrado.save();
       axios.post("https://andressalcedo2023.pythonanywhere.com/tweets",{"usuario": estudiante_registrado.usuario, "fecha_actual":hoy, "fecha_pasada":fecha_pasada})
       .then(
         async function (datos) {
           const tweets_usuario=datos.data.tweets;
-          e.estado=datos.data.estado;
-          await e.save();
+          estudiante_registrado.estado=datos.data.estado;
+          await estudiante_registrado.save();
           try{
             for (const tweet_usuario of tweets_usuario){
               var existe_tweet_usuario= await tweets.findOne({mensaje: tweet_usuario.texto, fecha: tweet_usuario.fecha, usuario: estudiante_registrado.usuario});
